@@ -7,6 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.net.URL;
+import java.util.List;
 
 @Controller
 public class RouteControl {
@@ -22,9 +26,12 @@ public class RouteControl {
 
     @PostMapping(value = "/")
     @ResponseBody
-        public String uploadFile(@RequestPart(value= "file") final MultipartFile[] multipartFile){
-            s3service.uploadFile(multipartFile);
+        public ModelAndView uploadFile(@RequestPart(value= "file") final MultipartFile[] multipartFile){
+            ModelAndView returnPage = new ModelAndView();
+            List<String> imageURL = s3service.uploadFile(multipartFile);
             LOGGER.info("Files have uploaded successfully");
-            return "index";
+            returnPage.setViewName("display");
+            returnPage.addObject("imageURL", imageURL);
+            return returnPage;
     }
 }
